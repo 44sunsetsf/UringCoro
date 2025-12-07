@@ -1,0 +1,81 @@
+#!/bin/bash
+
+FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx .tcc"
+
+# Determins if a file has the right extension to be clang-format'ed.
+should_clang_format() {
+    local filename=$(basename "$1")
+    local extension=".${filename##*.}"
+    local ext
+
+    local result=0
+
+    # Ignore the test/catch*.hpp file
+    if [[ "$1" != *"catch"* ]]; then
+        for ext in $FILE_EXTS; do
+            # Otherwise, if the extension is in the array of extensions to reformat, echo 1.
+            [[ "$ext" == "$extension" ]] && result=1 && break
+        done
+    fi
+
+    echo $result
+}
+
+# Run the clang-format across the project's changed files.
+# for file in $(git diff-index --cached --name-only HEAD); do
+#     if [ -f "${file}" ] && [ "$(should_clang_format "${file}")" != "0" ] ; then
+#         echo "clang-format ${file}"
+#         clang-format -i --style=file "${file}"
+#         git add "${file}"
+#     fi
+# done
+
+# Update the README.MD example code with the given macros.
+template_contents=$(cat '.githooks/readme-template.MD')
+cp .githooks/readme-template.MD README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/parallel_calc.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_PARALLEL\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/timer.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_TIMER\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/event.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_EVENT\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/latch.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_LATCH\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/wait_group.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_WAIT_GROUP\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/mutex.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_MUTEX\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/when_all.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_WHEN_ALL\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/cv_notify_one.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_CONDITION_VARIABLE\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/channel.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_CHANNEL\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/stdin_client.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_TCP_STDIN_CLIENT\}/$example_contents}" > README.MD
+
+template_contents=$(cat 'README.MD')
+example_contents=$(cat 'examples/tcp_echo_server.cpp')
+echo "${template_contents/\$\{EXAMPLE_CORO_TCP_ECHO_SERVER\}/$example_contents}" > README.MD
+
+git add README.MD
